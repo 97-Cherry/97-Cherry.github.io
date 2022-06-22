@@ -1,0 +1,1031 @@
+# 数据结构与算法的基础知识
+
+常见的数据结构（存储数据结构的方式）分类：数组（Array）, 栈（stack）, 链表（Linked List）, 图（Graph），散列表（Hash）, 队列（Queue）, 树（Tree）,堆（Heap）等。
+
+算法（algorithm:解决问题的方法和逻辑）：算法影响问题解决的效率
+
+## 1、数组Array
+
+1、js中的数组不需要封装，Java中需要封装数组ArrayList类型
+
+2、js中的数组容量可以自动扩容，Java中不可，需要用ArrayList.add()来添加新的数组容量
+
+3、数组是有序结果，链表是无序的
+
+4、数组是一种线性结构，可以在任何的位置进行插入和删除数据
+
+## 2、栈Stack
+
+1、栈顶中添加元素，后进先出，先进后出的一个操作原则
+
+2、仅仅允许在栈的一端进行删除和添加元素，插入元素叫做进栈，删除元素叫做出栈。
+
+3、生活中常见的例子：自助餐的托盘，信箱中堆积的邮件
+
+4、函数调用栈：a调用了b, b调用了c, c调用了d,
+
+那么在执行的过程会首先将A压入栈中，A没有执行完，就是不会弹出栈的，一次将A-B-C-D压入栈中，D执行完之后，就会一次弹出栈D-C-B-A, 所以就有了函数调用栈的称呼。
+
+5、对于递归的函数，函数自己调用自己，用不会存在出栈的情况，一直是入栈的部分，所以会存在着栈溢出的错误
+
+![image-20220621104444590](C:\Users\honor\AppData\Roaming\Typora\typora-user-images\image-20220621104444590.png)
+
+6、实现栈结构的两种方式：
+
+​           1、基于数组实现，2、基于链表实现
+
+```js
+//栈的封装
+<script>
+    //封装栈类
+    function Stack(){
+    //栈的属性
+    this.items=[];
+    //栈的相关操作，pop(移除栈顶元素),push(添加新元素到栈顶),peek(查看栈顶元素，不做修改),isEmpty(),size(),toString()
+    //1、将元素压入栈
+    Stack.prototype.push=function(element){
+        //js中用来添加方法
+        this.items.push(element)
+    }
+    //2、从栈顶去元素
+    Stack.prototype.pop=function(element){
+        return this.items.pop()
+}
+    //3、栈顶查看元素
+    Stack.prototype.peek=function(){
+        return this.items[this.items.length-1];
+    }
+    //4、判断是否为空
+    Stack.prototype.isEmpty=function(){
+        return this.items.length==0
+}
+    //5、栈中元素的个数
+    Stack.prototype.size=function(){
+        return this.items.length
+    }
+    //6、toString()方法
+    Stack.prototype.toString=function(){
+      var resultString=''
+      for(var i=0;i<this.items.length;i++){
+          resultString=this.items[i]+''
+      }
+        return resultString
+    }    
+    
+}
+//栈的使用
+var s=new Stack()
+s.push(20);
+s.push(10);
+s.push(100);
+
+s.pop();
+
+alert(s.peek());
+alert(s.isEmpty());
+    
+    
+</script>
+```
+
+7、栈的应用
+
+①十进制转二进制
+
+100-1100100，依次压住栈中0010011
+
+```js
+//十进制转二进制
+function dec2bin(decNumber){
+    var stack=new Stack();
+	//循环操作
+    while(decNumber>0){
+        //将余数压入栈顶中
+        Stack.push(decNumber%2);
+        //整除之后的结果进行下一次的计算
+        decNumber=Math.floor(decNumber/2);
+    }
+    //从栈中取出值
+    var binaryString='';
+    while( !stack.isEmplty()){
+          binaryString+=stack.pop()
+      }
+    return binaryString
+    
+}
+dec2bin(100);
+```
+
+## 3、队列Queue
+
+1、队列：是一种受限的线性结构，只能在队列的前端进行删除，后端进行添加元素，存在先进先出（First in First out）
+
+2、实现方式：1、基于数组 2、基于链表
+
+```js
+//队列结构
+//队列的封装
+function Queue(){
+    //属性
+    this.items=[];
+    //方法,常见的操作，enqueue(添加元素),dequeue(),front();isEmpty()
+    //1、将元素加入到队列中
+    Queue.prototype.enqueue=function(element){
+        this.items.push(element);
+    }
+    //2、从队列中删除前面的第一个元素
+    Queue.prototype.dequeue=function(){
+       return this.items.shift();
+    }
+    //3、查看当前的元素
+    Queue.prototype.front=function(){
+        return this.items[0]
+}
+   // 4、查看队列中元素的个数
+    Queue.prototype.size=function(){
+        return this.items.length
+    }
+   // 5、tostring
+    Queue.prototype.toString=function(){
+		var resultString='';
+        for(var i=0;i<this.items.length;i++){
+			resultString+=this.items[i]+''
+        }
+        return resultString
+    }
+    //6、判断队列是否为空
+    Queue.prototype.isEmpty=function(){
+		return this.items.length==0
+    }
+}
+
+//使用队列
+var queue=new Queue()
+queue.enqueue('abc');
+queue.enqueue('def');
+queue.dequeue('nva')
+```
+
+3、实例--击鼓传花
+
+```js
+//将数数的人数添加到队列的后面，指定数为5的人淘汰
+function passGame(nameList,num){
+    var queue=new Queue();
+    //将所有人加入到队列中
+    for(var i=0;i<this.nameList.length;i++){
+        queue.enqueue(nameList[i])
+}
+ while(queue.size()>1){
+        //开始数数，数到值为num的移除，不是num的添加到队列的后面
+    for(var i=0;i<num-1;i++){
+        //所有的人可以添加到队列的后面
+        queue.enqueue(queue.dequeue());//将前面的元素删除，并添加到最后面的内容中
+    }
+    //直接删除掉
+    queue.dequeue();
+    
+ }
+    //获取剩下的那个人
+    alert(queue.size());
+    var endName=queue.front();
+    alert(“最终那个人的名字是”+endName);
+    
+    return nameList.indexOf(endName);//返回原的下标
+    
+
+}
+
+//测试方法
+names=['lili','lucy','cherry','lilei','meimei']
+passGame(names,3);
+```
+
+### 1、优先级队列
+
+1、优先级队列：元素进行比较，考虑数据的优先级，放置到合适的位置
+
+2、实例：机场登机的顺序
+
+3、优先级队列的封装
+
+```js
+function PriorityQueue(){
+    //创建一个属性
+    this.items=[];
+    //重新创建一个内部类
+    function QueueElement(element,priority){
+        this.element=element;
+        this.priority=priority
+    }
+   //安装插入的方法 		  PriorityQueue.prototype.enqueue=function(element,priority){
+        var queueElement=new QueueElement(element,priority)
+        
+        //原来的队列中没有元素，直接插入即可
+//队列中存在元素，会进行比较，优先级大，会插入到前面，如果当前的元素优先级比所有大，直接添加到后面
+        if(this.items.length==0){
+            this.items.push(queueElement)
+        }else{
+            var added=false;
+            for(var i=0;i<this.items.length;i++){
+                if(queueElement.priority<this.items[i].priority){
+                    this.items.splice(i,0,queueElement)
+                    added=true;
+                    break;
+                }
+            }
+            if(!added){
+                this.items.push(queueElement)
+}
+        }
+    }
+
+  //1、将元素加入到队列中
+    Queue.prototype.enqueue=function(element){
+        this.items.push(element);
+    }
+    //2、从队列中删除前面的第一个元素
+    Queue.prototype.dequeue=function(){
+       return this.items.shift();
+    }
+    //3、查看当前的元素
+    Queue.prototype.front=function(){
+        return this.items[0]
+}
+   // 4、查看队列中元素的个数
+    Queue.prototype.size=function(){
+        return this.items.length
+    }
+   // 5、tostring
+    Queue.prototype.toString=function(){
+		var resultString='';
+        for(var i=0;i<this.items.length;i++){
+			resultString+=this.items[i]+''
+        }
+        return resultString
+    }
+    //6、判断队列是否为空
+    Queue.prototype.isEmpty=function(){
+		return this.items.length==0
+    }
+    
+    
+}
+var pg=new PriorityQueue()
+pq.enqueue('abc',111);
+```
+
+## 4、***链表LinkedList
+
+1、数组是有序的，链表是无序的
+
+2、链表: 不需要在创建的时候确定大小，并且大小可以无限的延伸下去，
+
+3、链表 插入和删除数据是，时间复杂度可以达到o(1)，效率高于数组
+
+4、链表都需要从头开始访问，无法跳过每一个元素或者直接进行访问特定的元素
+
+![image-20220621161611308](C:\Users\honor\AppData\Roaming\Typora\typora-user-images\image-20220621161611308.png)
+
+5、创建一个链表
+
+```js
+//单向列表的封装
+function LinkedList(){
+    //至少包含一个head属性
+    this.head=null;
+    //记录链表的长度
+    this.length=0;
+    //创建一个结点类
+    function Node(data){
+        this.data=data;
+        this.next=null;
+    }
+    //链表实现的方法
+    //append(element)向尾部添加一个新的项
+    //insert(position,element)在特定的位置插入一个新的项
+    //get(position)获取对应位置的元素
+    //indexOf(element)返回当前索引位置的元素，如果不存在就返回-1
+    //update(position)修改某个位置上的元素
+    //removeAt(position)从列表中的特定位置移除一项
+    //remove(position)从列表中移除一项
+    
+    //1、append(element)向尾部添加一个新的项
+    LinkedList.prototype.append=function(element){
+        //判断是否添加的是第一个结点
+        if(this.length==0){
+            var newNode=new Node(element);//创建一个结点
+            this.head=newNode;//让头结点指向创建的这个结点   
+        }else{
+            var newNode=new Node(element);//创建一个结点
+            var current=this.head;
+            while(current.next){//current.next结点不为空，表示当前结点不是最后一个结点
+                current=current.next
+            }
+            //current.next结点为空，就直接指向一个新的结点
+            current.next=newNode
+        }
+        	this.length+=1;//长度加1
+       
+        
+}
+    //2、insert(position,element)在特定的位置插入一个新的项
+    LinkedList.prototype.insert=function(position,element){
+        //对position进行边界判断
+        if(position<0 || position > this.length)return  false;
+        //根据element进行创建结点
+        var newNode=new Node(element);
+        //情况1：position==0
+        if(position==0){
+           // this.head=newNode;
+           // newNode.next=this.head//原来的第一个,交换位置
+            newNode.next=this.head----------------------------------------
+            this.head=newNode----------------------------------------------
+	}else{
+        //情况2：position==2
+        var index=0;
+        var current=this.head;
+        var previous=null
+        while(index++ < position){
+            current=current.next
+            
+        }
+        newNode.next=current
+        previous.next=newNode
+        
+    }
+        this.length+=1;
+        return true
+    }
+    //3、get(position)获取对应位置的元素
+    LinkedList.prototype.get=function(position){
+        if(position<0 || position >= this.length)return  null;
+        //获取对应的element
+        var current=this.head;
+        var index=0;
+        while(index++ <position){
+            current=current.next
+        }
+        return current.element
+        
+    }
+    //indexOf(element)返回当前索引位置的元素，如果不存在就返回-1
+    LinkedList.prototype.indexOf=function(element){
+        var current=this.head;
+        var index=0;//返回第几个结点
+        //开始查找
+        while(current){//current不为null,表示当前结点不是最后一个元素
+            if(current.element==element){
+                return index
+            }
+            current=current.next;
+            index+=1;
+            
+        }
+        return -1;//没有找到相应的值
+        
+    }
+    //4、update(position)修改某个位置上的元素
+    LinkedList.prototype.update=function(position,element){
+        if(position<0 || position >= this.length)return  null;//越界判断
+        //获取对应的element
+        var current=this.head;
+        var index=0;
+        while(index++ <position){
+            current=current.next
+        }
+        //将position位置修改为新的element
+        current.element=element;
+        return true;
+        
+    }
+    //5、removeAt(position)从列表中的特定位置移除一项
+    LinkedList.prototype.removeAt=function(position){
+        //越界判断
+        if(position<0 || position >=this.length) return false;
+        var current=this.head;
+        if(position==0){
+        this.head=this.head.next;
+    }else{
+        var index=0;
+        
+        var previous=null;
+        while(index++ < position){
+            previous=current;
+            current=current.next;//进行传递值
+            
+        }
+        previous.next=current.next;
+        
+    }
+        this.length++1;
+        return current.element
+		
+    }
+    //6、remove(element)从列表中移除一项
+    LinkedList.prototype.remove=function(element){
+		//获取element在列表中的位置
+        var position=this.indexOf(element);
+        //根据位置信息，删除对应的数据
+        return this.removeAt(position);
+    }
+    //7、toString方法
+    LinkedList.prototype.toString=function(){
+        //定义变量
+        var current=this.head;
+        var listString='';
+        //循环获取一个结点
+        while(current)
+            listString=current.element+'';
+        	current=current.next;
+        }
+    		return listString
+    }
+//isEmpty()方法
+	LinkedList.prototype.isEmpty=function(){
+        return this.length==0
+    }
+//size()方法
+	LinkedList.prototype.size=function(){
+        return this.length
+    }
+    
+}
+
+var list=new LinkedList();
+list.append('abc');
+list.append('def');
+list.append('ghk');
+alert(list);
+
+```
+
+### 双向链表
+
+每一个结点上面存在着指向上一个结点和下一个结点的引用
+
+```js
+//封装双向列表
+function DoublyLinkedList(){
+    //属性
+    this.head=null;
+    this.tail=null;
+    this.length=0;
+    
+    //创建一个内部类，用来创建结点
+    function Node(element){
+        this.element=element;
+        this.pre=null;
+        this.next=null;
+        
+    }
+    
+    //1、添加操作append(element)
+    DoublyLinkedList.prototype.append=function(element){
+        
+       
+        var newNode=new Node(element);
+        //判断当前链表是否为空
+        if(this.length==0){
+            this.head=newNode;
+            this.tail=newNode;
+            
+        }else{//不是第一个结点
+           
+       		newNode.pre=this.tail;
+            this.tail.next=newNode;
+            this.tail=newNode;
+            
+            
+        }
+        this.length += 1;
+       
+    }
+    
+    //2、将链表转化为字符串形式toString()，
+    DoublyLinkedList.prototype.toString=function(){
+ 		 var current=this.head;
+         var resultString='';
+         for(var i=0;i<this.length;i++){
+             resultString+=current.element+''
+             current=current.next;
+         }
+         return resultString
+         
+        
+    }
+    }
+    
+    DoublyLinkedList.prototype.forwardString=function(){
+        var current=this.tail;
+         var resultString='';
+         for(var i=0;i<this.length;i++){
+             resultString+=current.element+'';
+             current=current.pre
+         }
+         return resultString
+        
+    }
+     
+     DoublyLinkedList.prototype.backwardString=function(){
+         var current=this.head;
+         var resultString='';
+         for(var i=0;i<this.length;i++){
+             resultString+=current.element+''
+             current=current.next;
+         }
+         return resultString
+         
+        
+    }
+//3、insert进行插入值-------------------------------------------------
+
+	DoublyLinkedList.prototype.insert=function(position,element){
+        //越界判断
+        if(position < 0 || position>this.length) return false;
+        
+        //创建一个新结点
+        var newNode=new Node(element);
+        //判断当前的链表是否为空
+        if(this.length==0){
+            this.head=newNode;
+            this.tail=newNode;
+        }else{
+            //判断position==0
+            if(position==0){
+                this.head.pre=newNode;//原来的第一个结点的pre=newNode
+                newNode.next=this.head;//newNode的下一个结点，为当前的头结点
+                this.head=newNode;
+                
+            }else if(position==this.length){
+                newNode.pre=this.tail;//当前结点的前一个结点，等于原来结点的尾结点
+                this.tail.next=newNode;
+                this.tail=newNode;
+                
+            }else{
+                //current来获取原来的节点的位置
+                var current=this.head;
+                var index=0
+                while(index++ < position){
+                    current=current.next;//找到当前的结点的位置
+                }
+                newNode.next=current;
+                newNode.pre=current.pre;
+                current.pre.next=newNode;
+                current.pre=newNode;
+            }
+        }
+        this.length+=1;
+        return true;
+        
+    }
+//4、get(position)获取当前位置的结点元素
+	DoublyLinkedList.prototype.get=function(position){
+        //越界判断
+        if(position < 0 || position >=this.length) return null;
+        //判断this.length/2>position，从头向后遍历
+        //this.length/2< position，从后开始遍历
+        //获取元素
+        var current=this.head;
+        var index=0;
+        while(index++ < position){
+            current=current.next
+        }
+        return current.element
+//5、indexOf(element)查找对应元素的索引，不存在则返回-1
+     DoublyLinkedList.prototype.indexOf=function(element){
+         //定义一个变量
+         var current=this.head;
+         var index=0;
+         
+         //查找元素相同的结点
+         while(current){//判断是否为最后一个结点，
+             if(current.element==element){
+                 return index;
+             }
+             //最后一个结点
+             current=current.next;
+             index += 1；
+             
+         }
+         return -1;//不存在当前的元素索引
+     }
+//6、updata(position,element)更新元素
+      DoublyLinkedList.prototype.update=function(position,element){
+         //越界的判断
+          if(position < 0 || position >=this.length) return false;
+         //寻找正确的结点
+          var current=this.head;
+          var index=0;
+          while(index++ < position){
+              current=current.next;
+          }
+          current.element=element;
+     }
+        
+//7、removeAt(position)从列表中指定位置进行删除
+     DoublyLinkedList.prototype.removeAt=function(position){
+         if(position < 0 || position >=this.length) return null;
+         //当前只存在一个结点
+         var current=this.head;
+         if(this.length==1){
+             this.head=null;
+         	 this.tail=null;
+         }else{
+             //长度不为1，删除第一个结点
+             if(position ==0){
+                 this.head.next.pre=null;
+                 this.head=this.head.next;
+                 
+             }else if(position ==this.length-1){
+                 current=this.tail;
+                 this.tail.pre.next=null;
+                 this.tail=this.tail.next;//当前结点的尾结点，是原始结点的下一个结点
+             }else{
+                 
+                 var index=0;
+                 while(index++ < position){
+                     current=current.next;
+                 }
+                 current.pre.next=current.next;
+                 current.next.pre=current.pre
+             }
+             
+             
+         }
+         this.length-=1;
+         return current.element
+         
+     }
+//8、remove()方法
+        DoublyLinkedList.prototype.remove=function(element){
+            var position=this.indexOf(element);
+           return this.removeAt(position)
+            
+        }
+ //9.判断当前长度是否为空
+        DoublyLinkedList.prototype.isEmpty=function(){
+            return this.length==0
+        }
+  //10、获取链表的长度
+        DoublyLinkedList.prototype.size=function(){
+            return this.length;
+        }
+  //11、获取头部结点
+        DoublyLinkedList.prototype.getHead=function(){
+            return this.head.element
+        }
+  //12、获取尾部结点
+        DoublyLinkedList.prototype.getTail=function(){
+            return this.tail.element
+        }
+    
+}
+
+var list=new DoublyLinkedList();
+list.append('abc1')
+list.append('abc2')
+list.append('abc3')
+alert(list);
+
+list.insert(0,'def');
+list.insert(2,'gfk');
+
+alert(list.indexOf('111'));
+
+alert(list.removeAt(3))
+
+alert(list.isEmpty());
+alert(list.size());
+```
+
+## 5、集合Set
+
+集合是无序的，不能重复的元素构成
+
+```js
+//集合的封装
+function Set(){
+    //集合的属性
+    this.items={};//Object对象[keys,value]键值的形式存储
+    //集合的方法
+    //1、add(value)添加值 remove(value)移除元素 has(value)是否存在这个值 clear()清除值
+    //add(value)
+    Set.prototype.add=function(value){
+        if(this.has(value)){
+            return false
+        }
+        this.items[value]=value;//
+        return true
+    }
+    //has()
+    Set.prototype.has=function(value){
+        return this.items.hasOwnProperty(value)
+    }
+    //remove()
+    Set.prototype.remove=function(value){
+        //判断该集合中是否存在这样的一个元素
+        if(!this.has(vaule)){
+            return false
+        }
+        //删除操作
+        delete this.items[value]；
+        return true
+    }
+    //clear()
+    Set.prototype.clear=function(){
+        this.items={};//将集合中的元素全部清空
+    }
+    //size()方法
+    Set.prototype.size=function(){
+        return Object.keys(this.items).length;
+    }
+    //获取集合中所有的值
+    Set.prototype.values=function(){
+        
+        return Object.keys(this.items)
+    }
+    //集合间的操作
+    //并集
+    Set.prototype.union=function(otherSet){
+      //this:集合对象A,otherSet集合对象B
+        //1、创建新的集合
+        var unionSet=new Set();
+        //2、将A集合中所有的元素添加到新集合中
+        var values=this.values();
+        for(var i=0;i<values.length;i++){
+            unionSet.add(values[i]);
+        }
+        //去除B集合中的元素，判断是否需要添加到新的集合中
+        values=otherSet.values();
+        for(var i=0; i<values.length;i++){
+            unionSet.add(values[i]);
+        }
+        
+    }
+    //交集
+    Set.prototype.interSection=function(otherSet){
+        //this:集合A otherSet：集合B
+        var intersectionSet=new Set();
+        //将A中取出一个元素判断是否同时存在于集合B中，存在新的集合中
+        var values=this.values();
+        for(var i=0;i<values.length;i++){
+            var item=values[i];
+            if(otherSet.has(item)){
+                intersectionSet.add(item)
+            }
+        }
+        return intersectionSet;
+    }
+    //差集
+    Set.prototype.differenceSet=function(otherSet){
+        var differentSet=new Set();
+        var values=this.values();
+        //取出A集合中的一个元素，判断是否同时存在于B中，不存在B汇总，则添加到新的集合中
+        for(var i=0;i<values.length;i++){
+            var item=values[i];
+            if( !otherSet.has(item)){
+                differentSet.add(item)
+            }
+        }
+        return differentSet
+    }
+    //子集
+    Set.prototype.subset=function(otherSet){
+        //遍历集合A中所有的元素，如果发现，集合A中的元素，在集合B中不存在，那么为false,A中的元素全部存在于集合B中
+        //如果遍历完整个集合，依然没有返回false,那么返回true即可
+        var values=this.values();
+        for(var i=0;i<values.length;i++){
+            var item=values[i];
+            if( !otherSet.has(item)){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+}
+
+//测试set类
+var set=new Set();
+//添加元素
+alert(set.add('abc'));
+alert(set.add('bcd'));
+alert(set.add('def'));
+
+var setA=new Set();
+setA.add('abc1');
+setA.add('abc2');
+setA.add('abc3');
+
+var setB=new Set();
+setB.add('bcf1');
+setB.add('bcf2');
+setB.add('bcf3');
+
+var intersectionSet=setA.intersectionSet(setB);
+alert(intersectionSet.values());
+
+var differentSet=setA.differenceSet(setB);
+alert(differentset.values());
+
+
+```
+
+## 6、哈希表Hash
+
+Hash背后的原理和优势
+
+hash是基于数组实现的，但是效率优于数组
+
+1、数组 在进行插入操作的时候，效率相对较低
+
+2、数组进行查找操作的效率
+
+ 1）基于索引进行查找效率非常高
+
+ 2）基于内容进行查找，效率非常低
+
+3、数组进行删除操作，效率也不高
+
+4、hash表可以提高数组效率低的操作
+
+5、案例一：公司员工的存储
+
+hash函数-----基于内容进行查找，可以将内容转化为下标值
+
+6、案例二：字母转为数字的方案
+
+通过ascii码值将对应的字母转化为数字相加
+
+7、哈希化：将一个大数字转化成数组范围内下标的过程------取余的过程
+
+哈希函数：通常我们会将单词转成大数字，大数字在进行哈希化的代码实现放在一个函数中，这个函数就是哈希函数
+
+哈希表：最终将数据插入到这个数组中，对整个结构的封装
+
+在哈希表里面，一旦哈希化之后得到的下标产生了冲突，如何解决：
+
+1、链地址法
+
+2、开放地址法
+
+实现方式：
+
+1、链地址法（拉链法）
+
+实现思路：每一个下标的值，不在是存储一个单独的数字，而是存储一个链表或者数组，将相同尾号的数存在同一个数组或者链表中
+
+![image-20220622175130053](C:\Users\honor\AppData\Roaming\Typora\typora-user-images\image-20220622175130053.png)
+
+2、开放地址法：就是寻找空白的单元格来添加元素
+
+线性探测，二次探测，再哈希法，通过步长+1来查找空白的单元格来存储数据，
+
+线性查找相关的问题：
+
+注意：删除某一个数据项的时候，不可以将这个位置下标的内容设置为null, 因为在进行下一次查找的时候，会影响我们之后的查询操作，所以通常删除一个位置的数据项是，可以将它进行特殊处理，比如设置为-1
+
+二次探测：线性探测的基础上优化步长
+
+再哈希法：
+
+```js
+//设计hash函数
+//字符串转化为一个较大的数字：hashCode
+//将较大的数字hashCode压缩到数组范围之内
+function hashFunction(str, size){
+    //1、定义变量
+    var hashCode=0;
+    //霍纳算法，计算hashCode的值
+    for(var i=0;i<str.length;i++){
+       hashCode=37 * hashCode+ str.charCodeAt(i);//获取某一个字符的unicode编码
+        
+        //取余操作
+        var index=hashCode % size
+        
+        return index
+    }
+    
+}
+
+alert(hashFunction('abc',7))//4
+```
+
+```js
+//hash表
+function HashTable(){
+    //包含的属性
+    this.storage=[];
+    this.count=0;//记录hash表中的元素个数
+    this.limit=7;//用来标记数组中一共可以存放多少个元素
+   //数组的形式[[[k,v],[k,v],[k,v]],[k,v]]
+    //包含的方法
+    //hash函数
+   HashTable.prototype.hashFunction= function(str, size){
+    //1、定义变量
+    var hashCode=0;
+    //霍纳算法，计算hashCode的值
+    for(var i=0;i<str.length;i++){
+       hashCode=37 * hashCode+ str.charCodeAt(i);//获取某一个字符的unicode编码
+        
+        //取余操作
+        var index=hashCode % size
+        
+        return index
+    }
+    
+}
+    
+    //插入和修改数据<key,value>
+    HashTable.protype.put=function(key,value){
+        //1、根据key获取到插入数据的索引值，将数据插入到对应的位置
+         var index=this.hashFunction(key,this.limit);
+        //2、根据索引值，取出bucket(用来存放数据)
+        		//1)如果bucket不存在，需要进行创建，并放在索引号的位置
+        var bucket=this.storage[index];
+        if(bucket==null){
+            bucket=[];
+            this.storage[index]=bucket;
+       //3、判断是新增还是修改原来的值
+        		//1)循环遍历是否存在值，如果存在值，进行修改，不存在，进行添加操作
+       	for(var i=0;i<bucket.length;i++){
+            var tuple=bucket[i];
+            if(tuple[0]==key){
+                tuple[1]=value
+                return
+            }
+        }
+            //4、新增操作
+        bucket.push([key,value]);
+            this.count +=1；
+       
+        
+    }
+        //获取操作
+        HashTable.prototype.get=function(key){
+            //思路：1、根据key获取对应的index,
+            var index=this.hashFunction(key,this.limit);
+            //2、根据index获取对应的bucket 
+            var bucket=this.storage[index]
+            //3、判断bucket是否为null,如果为null,直接返回null
+            if(bucket==null){
+                return null
+            }
+            //4、线性查找bucket中每一个key是否等于传入的key,如果等于则返回对应的value值
+            for(var i=0;i<bucket.length;i++){
+                var tuple=bucket[i];
+                if(tuple[0]==key){
+                    return tuple[1]
+                }
+            }
+            //依然没有找到对应的值
+            return null;
+            
+            
+        }
+        
+        //删除操作
+        HashTable.prototype.remove=function(key){
+            //思路：1、根据key获取对应的index
+            var index=hashFunction(key, this.limit);
+            //2、根据index来获取对应bucket
+            var bucket=this.storage[index];
+            //3、判断bucket是否存在，如果不存在，那么则返回false
+            if(bucket==null){
+                return null
+            }
+            //4、线性查找bucket.寻找对应的数据，并且删除，如果依然没有找到，则返回null
+            for(var i=0;i<bucket.length;i++){
+                var tuple=bucket[i];
+                if(tuple[0]==key){
+                    bucket.splice(i,1);//删除方法
+                    this.count--;
+                    return tuple[1];
+                }
+            }
+            //如果依旧没有找到对应的数据
+            return null;
+        }
+        //判断hash表是否为空
+        HashTable.prototype.isEmpty=function(){
+            return this.count==0;
+        }
+        //获取hash表中元素的个数
+        HashTable.prototype.size=function(){
+            return this.count;
+        }
+
+    
+}
+    
+    //测试hash表
+    var ht=new HashTable();
+    ht.put('abc1','23')
+    ht.put('abc2','231')
+    ht.put('abc3','232');
+    
+    //获取方法
+    alert(ht.get('abc1'));
+```
+
